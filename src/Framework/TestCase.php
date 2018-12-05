@@ -686,16 +686,19 @@ abstract class TestCase extends Assert implements Test, SelfDescribing
             return $result;
         }
 
+        print "## check: TestCase->runInSeperateProcess()\n";
         if ($this->runInSeparateProcess()) {
             $runEntireClass = $this->runClassInSeparateProcess && !$this->runTestInSeparateProcess;
 
             $class = new ReflectionClass($this);
 
             if ($runEntireClass) {
+                print "## @runClassInSeperateProcess\n";
                 $template = new Text_Template(
                     __DIR__ . '/../Util/PHP/Template/TestCaseClass.tpl'
                 );
             } else {
+                print "## @runInSeperateProcess\n";
                 $template = new Text_Template(
                     __DIR__ . '/../Util/PHP/Template/TestCaseMethod.tpl'
                 );
