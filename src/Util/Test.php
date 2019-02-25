@@ -782,6 +782,18 @@ final class Test
         return self::$hookMethods[$className];
     }
 
+    public static function hasDataAnnotation(string $className, string $methodName): bool
+    {
+        $reflector  = new ReflectionMethod($className, $methodName);
+        $docComment = (string) $reflector->getDocComment();
+
+        if (\preg_match(self::REGEX_DATA_PROVIDER, $docComment) || \preg_match(self::REGEX_TEST_WITH, $docComment)) {
+            return true;
+        }
+
+        return false;
+    }
+
     /**
      * @throws CodeCoverageException
      */

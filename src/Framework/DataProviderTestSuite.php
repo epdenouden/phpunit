@@ -20,6 +20,11 @@ final class DataProviderTestSuite extends TestSuite
     private $dependencies = [];
 
     /**
+     * @var bool
+     */
+    private $isLoaded = false;
+
+    /**
      * @param string[] $dependencies
      */
     public function setDependencies(array $dependencies): void
@@ -39,5 +44,131 @@ final class DataProviderTestSuite extends TestSuite
     public function hasDependencies(): bool
     {
         return \count($this->dependencies) > 0;
+    }
+
+    public function run(TestResult $result = null): TestResult
+    {
+        $this->load();
+
+        return parent::run($result);
+    }
+
+    public function load(): void
+    {
+        if ($this->isLoaded) {
+            return;
+        }
+
+//        print "### loading dataprovider {$this->getName()}\n";
+        $this->isLoaded = true;
+
+        [$className, $name] = \explode('::', $this->getName());
+
+        try {
+            $data = \PHPUnit\Util\Test::getProvidedData(
+                $className,
+                $name
+            );
+        } catch (IncompleteTestError $e) {
+            $message = \sprintf(
+                'Test for %s::%s marked incomplete by data provider',
+                $className,
+                $name
+            );
+
+            $_message = $e->getMessage();
+
+            if (!empty($_message)) {
+                $message .= "\n" . $_message;
+            }
+
+            throw new IncompleteTestError($message);
+        } catch (SkippedTestError $e) {
+            $message = \sprintf(
+                'Test for %s::%s skipped by data provider',
+                $className,
+                $name
+            );
+
+            $_message = $e->getMessage();
+
+            if (!empty($_message)) {
+                $message .= "\n" . $_message;
+            }
+
+            throw new SkippedTestError($message);
+        } catch (Throwable $t) {
+            $message = \sprintf(
+                'The data provider specified for %s::%s is invalid.',
+                $className,
+                $name
+            );
+
+            $_message = $t->getMessage();
+
+            if (!empty($_message)) {
+                $message .= "\n" . $_message;
+            }
+
+            throw new Warning($message);
+        }
+
+        if (empty($data)) {
+            throw new Warning(
+                \sprintf(
+                    'No tests found in suite "%s".',
+                    $this->getName()
+                )
+            );
+        }
+
+        $this->createTestsFromData($className, $name, $data);
+    }
+
+    private function createTestsFromData(string $className, string $name, array $data): void
+    {
+        $groups = \PHPUnit\Util\Test::getGroups($className, $name);
+
+        $runTestInSeparateProcess                 = false;
+        $preserveGlobalState                      = false;
+        $runClassInSeparateProcess                = false;
+        $backupSettings['backupGlobals']          = false;
+        $backupSettings['backupStaticAttributes'] = false;
+
+        foreach ($data as $_dataName => $_data) {
+            $_test = new $className($name, $_data, $_dataName);
+
+            /* @var TestCase $_test */
+
+            if ($runTestInSeparateProcess) {
+                $_test->setRunTestInSeparateProcess(true);
+
+                if ($preserveGlobalState !== null) {
+                    $_test->setPreserveGlobalState($preserveGlobalState);
+                }
+            }
+
+            if ($runClassInSeparateProcess) {
+                $_test->setRunClassInSeparateProcess(true);
+
+                if ($preserveGlobalState !== null) {
+                    $_test->setPreserveGlobalState($preserveGlobalState);
+                }
+            }
+
+            if ($backupSettings['backupGlobals'] !== null) {
+                $_test->setBackupGlobals(
+                    $backupSettings['backupGlobals']
+                );
+            }
+
+            if ($backupSettings['backupStaticAttributes'] !== null) {
+                $_test->setBackupStaticAttributes(
+                    $backupSettings['backupStaticAttributes']
+                );
+            }
+
+            $this->addTest($_test, $groups);
+        }
     }
 }
