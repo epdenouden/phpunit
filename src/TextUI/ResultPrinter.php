@@ -10,6 +10,7 @@
 namespace PHPUnit\TextUI;
 
 use PHPUnit\Framework\AssertionFailedError;
+use PHPUnit\Framework\DataProviderTestSuite;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\Test;
 use PHPUnit\Framework\TestCase;
@@ -112,6 +113,11 @@ class ResultPrinter extends Printer implements TestListener
      * @var bool
      */
     private $defectListPrinted = false;
+
+    /**
+     * @var TestSuite
+     */
+    private $rootTestSuite = null;
 
     /**
      * Constructor.
@@ -233,8 +239,12 @@ class ResultPrinter extends Printer implements TestListener
      */
     public function startTestSuite(TestSuite $suite): void
     {
-        if ($this->numTests == -1) {
-            $this->numTests      = \count($suite);
+        if ($this->rootTestSuite === null) {
+            $this->rootTestSuite = $suite;
+        }
+
+        if ($this->numTests == -1 || $suite instanceof DataProviderTestSuite) {
+            $this->numTests = \count($this->rootTestSuite);
             $this->numTestsWidth = \strlen((string) $this->numTests);
             $this->maxColumn     = $this->numberOfColumns - \strlen('  /  (XXX%)') - (2 * $this->numTestsWidth);
         }
