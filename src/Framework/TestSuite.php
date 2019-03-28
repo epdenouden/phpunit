@@ -83,6 +83,11 @@ class TestSuite implements Test, SelfDescribing, IteratorAggregate
     protected $foundClasses = [];
 
     /**
+     * @var Factory
+     */
+    protected $iteratorFilter;
+
+    /**
      * Last count of tests in this suite.
      *
      * @var null|int
@@ -93,11 +98,6 @@ class TestSuite implements Test, SelfDescribing, IteratorAggregate
      * @var bool
      */
     private $beStrictAboutChangesToGlobalState;
-
-    /**
-     * @var Factory
-     */
-    private $iteratorFilter;
 
     /**
      * @var string[]
@@ -594,13 +594,8 @@ class TestSuite implements Test, SelfDescribing, IteratorAggregate
             $result = $this->createResult();
         }
 
-        if ($this instanceof DataProviderTestSuite) {
-            assert($this instanceof DataProviderTestSuite);
-            $this->load();
-        }
-
-        if (\count($this) == 0) {
-//            print "### nothing in {$this->getName()}\n";
+        if (\count($this->tests()) == 0) {
+//            print "<## nothing in {$this->getName()}\n";
             return $result;
         }
 
@@ -771,6 +766,17 @@ class TestSuite implements Test, SelfDescribing, IteratorAggregate
         }
     }
 
+    public function loadAllDataProviders(): void
+    {
+        foreach ($this->tests() as $t) {
+            if ($t instanceof DataProviderTestSuite) {
+                $t->loadData();
+            } elseif ($t instanceof self) {
+                $t->loadAllDataProviders();
+            }
+        }
+    }
+
     /**
      * Returns an iterator for this test suite.
      */
@@ -779,6 +785,7 @@ class TestSuite implements Test, SelfDescribing, IteratorAggregate
         $iterator = new TestSuiteIterator($this);
 
         if ($this->iteratorFilter !== null) {
+//            print "  % has filter\n";
             $iterator = $this->iteratorFilter->factory($iterator, $this);
         }
 
@@ -791,6 +798,7 @@ class TestSuite implements Test, SelfDescribing, IteratorAggregate
 
         foreach ($this as $test) {
             if ($test instanceof self) {
+//                print "= injecting from {$this->getName()} into {$test->getName()}\n";
                 $test->injectFilter($filter);
             }
         }

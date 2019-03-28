@@ -1213,6 +1213,7 @@ class Command
         $this->printVersionString();
 
         $renderer = new TextTestListRenderer;
+        $suite->loadAllDataProviders();
 
         print $renderer->render($suite);
 
@@ -1231,6 +1232,7 @@ class Command
         $this->printVersionString();
 
         $renderer = new XmlTestListRenderer;
+        $suite->loadAllDataProviders();
 
         \file_put_contents($target, $renderer->render($suite));
 

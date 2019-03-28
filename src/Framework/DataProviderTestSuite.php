@@ -9,6 +9,8 @@
  */
 namespace PHPUnit\Framework;
 
+use PHPUnit\Runner\Filter\Factory;
+
 /**
  * @internal This class is not covered by the backward compatibility promise for PHPUnit
  */
@@ -48,12 +50,31 @@ final class DataProviderTestSuite extends TestSuite
 
     public function run(TestResult $result = null): TestResult
     {
-        $this->load();
+        $this->loadData();
 
         return parent::run($result);
     }
 
-    public function load(): void
+    public function injectFilter(Factory $filter): void
+    {
+        $this->iteratorFilter = $filter;
+
+//        print "%%% load() in injectFilter()\n";
+        $this->loadData();
+    }
+
+    public function count($preferCache = false): int
+    {
+        if (!$this->isLoaded) {
+            // At least report a test count of 1 for unloaded dataproviders
+            // to ensure the test is visible to the TestRunner
+            return 1;
+        }
+
+        return parent::count($preferCache);
+    }
+
+    public function loadData(): void
     {
         if ($this->isLoaded) {
             return;
@@ -69,6 +90,8 @@ final class DataProviderTestSuite extends TestSuite
                 $className,
                 $name
             );
+
+            $this->createTestsFromData($className, $name, $data);
         } catch (IncompleteTestError $e) {
             $message = \sprintf(
                 'Test for %s::%s marked incomplete by data provider',
@@ -121,12 +144,14 @@ final class DataProviderTestSuite extends TestSuite
                 )
             );
         }
-
-        $this->createTestsFromData($className, $name, $data);
     }
 
     private function createTestsFromData(string $className, string $name, array $data): void
     {
+        if (empty($data)) {
+            return;
+        }
+
         $groups = \PHPUnit\Util\Test::getGroups($className, $name);
 
         $runTestInSeparateProcess                 = false;

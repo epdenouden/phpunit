@@ -151,6 +151,7 @@ class TestSuiteTest extends TestCase
     {
         $suite = new TestSuite(\DataProviderSkippedTest::class);
 
+        $this->expectException(SkippedTestError::class);
         $suite->run($this->result);
 
         $this->assertEquals(3, $this->result->count());
@@ -161,6 +162,7 @@ class TestSuiteTest extends TestCase
     {
         $suite = new TestSuite(\DataProviderDependencyTest::class);
 
+        $this->expectException(SkippedTestError::class);
         $suite->run($this->result);
 
         $skipped           = $this->result->skipped();
@@ -174,6 +176,7 @@ class TestSuiteTest extends TestCase
     {
         $suite = new TestSuite(\DataProviderIncompleteTest::class);
 
+        $this->expectException(IncompleteTestError::class);
         $suite->run($this->result);
 
         $this->assertEquals(3, $this->result->count());
