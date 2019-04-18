@@ -117,7 +117,7 @@ class ResultPrinter extends Printer implements TestListener
     /**
      * @var TestSuite
      */
-    private $rootTestSuite = null;
+    private $rootTestSuite;
 
     /**
      * Constructor.
@@ -244,7 +244,7 @@ class ResultPrinter extends Printer implements TestListener
         }
 
         if ($this->numTests == -1 || $suite instanceof DataProviderTestSuite) {
-            $this->numTests = \count($this->rootTestSuite);
+            $this->numTests      = \count($this->rootTestSuite);
             $this->numTestsWidth = \strlen((string) $this->numTests);
             $this->maxColumn     = $this->numberOfColumns - \strlen('  /  (XXX%)') - (2 * $this->numTestsWidth);
         }

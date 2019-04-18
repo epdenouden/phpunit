@@ -92,6 +92,7 @@ final class DataProviderTestSuite extends TestSuite
             );
 
             $this->createTestsFromData($className, $name, $data);
+
         } catch (IncompleteTestError $e) {
             $message = \sprintf(
                 'Test for %s::%s marked incomplete by data provider',
@@ -105,7 +106,7 @@ final class DataProviderTestSuite extends TestSuite
                 $message .= "\n" . $_message;
             }
 
-            throw new IncompleteTestError($message);
+            $this->addTest(new IncompleteTestCase($message));
         } catch (SkippedTestError $e) {
             $message = \sprintf(
                 'Test for %s::%s skipped by data provider',
@@ -119,40 +120,37 @@ final class DataProviderTestSuite extends TestSuite
                 $message .= "\n" . $_message;
             }
 
-            throw new SkippedTestError($message);
-        } catch (Throwable $t) {
+            $this->addTest(new SkippedTestCase($message));
+        } catch (Exception $e) {
             $message = \sprintf(
                 'The data provider specified for %s::%s is invalid.',
                 $className,
                 $name
             );
 
-            $_message = $t->getMessage();
+            $_message = $e->getMessage();
 
             if (!empty($_message)) {
                 $message .= "\n" . $_message;
             }
 
-            throw new Warning($message);
-        }
-
-        if (empty($data)) {
-            throw new Warning(
-                \sprintf(
-                    'No tests found in suite "%s".',
-                    $this->getName()
-                )
-            );
+            $this->addTest(new WarningTestCase($message));
         }
     }
 
     private function createTestsFromData(string $className, string $name, array $data): void
     {
+        $groups = \PHPUnit\Util\Test::getGroups($className, $name);
+
         if (empty($data)) {
+            $message = \sprintf(
+                'No tests found in suite "%s".',
+                $this->getName()
+            );
+            $this->addTest(new WarningTestCase($message), $groups);
+
             return;
         }
-
-        $groups = \PHPUnit\Util\Test::getGroups($className, $name);
 
         $runTestInSeparateProcess                 = false;
         $preserveGlobalState                      = false;
