@@ -191,8 +191,10 @@ class TestRunner extends BaseTestRunner
             if (!isset($arguments['cacheResultFile'])) {
                 if ($arguments['configuration'] instanceof Configuration) {
                     $cacheLocation = $arguments['configuration']->getFilename();
-                } else {
+                } elseif (isset($_SERVER['PHP_SELF'])) {
                     $cacheLocation = $_SERVER['PHP_SELF'];
+                } else {
+                    $cacheLocation = __DIR__;
                 }
 
                 $arguments['cacheResultFile'] = null;
