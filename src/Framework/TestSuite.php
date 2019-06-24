@@ -658,6 +658,10 @@ class TestSuite implements Test, SelfDescribing, IteratorAggregate
             }
 
             $test->run($result);
+
+            if ($test instanceof TestCase and $test->usesDataProvider()) {
+                $test->unloadData();
+            }
         }
 
         try {
@@ -710,6 +714,8 @@ class TestSuite implements Test, SelfDescribing, IteratorAggregate
 
     /**
      * Returns the tests as an enumeration.
+     *
+     * @return TestCase[]
      */
     public function tests(): array
     {

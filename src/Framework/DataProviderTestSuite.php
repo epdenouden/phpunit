@@ -26,6 +26,13 @@ final class DataProviderTestSuite extends TestSuite
      */
     private $isLoaded = false;
 
+    public function __construct($theClass = '', $name = '')
+    {
+        parent::__construct($theClass, $name);
+
+        $this->loadData();
+    }
+
     /**
      * @param string[] $dependencies
      */
@@ -59,7 +66,6 @@ final class DataProviderTestSuite extends TestSuite
     {
         $this->iteratorFilter = $filter;
 
-//        print "%%% load() in injectFilter()\n";
         $this->loadData();
     }
 
@@ -106,7 +112,7 @@ final class DataProviderTestSuite extends TestSuite
                 $message .= "\n" . $_message;
             }
 
-            $this->addTest(new IncompleteTestCase($message));
+            $this->addTest(new IncompleteTestCase($className, $name, $message));
         } catch (SkippedTestError $e) {
             $message = \sprintf(
                 'Test for %s::%s skipped by data provider',
@@ -120,7 +126,7 @@ final class DataProviderTestSuite extends TestSuite
                 $message .= "\n" . $_message;
             }
 
-            $this->addTest(new SkippedTestCase($message));
+            $this->addTest(new SkippedTestCase($className, $name, $message));
         } catch (Exception $e) {
             $message = \sprintf(
                 'The data provider specified for %s::%s is invalid.',

@@ -2210,4 +2210,15 @@ abstract class TestCase extends Assert implements Test, SelfDescribing
             }
         }
     }
+
+    public function unloadData(): void
+    {
+        if (empty($this->data)) {
+            return;
+        }
+
+        // MVP unloading: this needs a deeper look
+        $this->data = [];
+        $this->dataName = "__UNLOADED__";
+    }
 }
