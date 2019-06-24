@@ -30,7 +30,9 @@ final class DataProviderTestSuite extends TestSuite
     {
         parent::__construct($theClass, $name);
 
-        $this->loadData();
+        if (!\DEBUG_DP_JIT) {
+            $this->loadData();
+        }
     }
 
     /**
@@ -98,7 +100,6 @@ final class DataProviderTestSuite extends TestSuite
             );
 
             $this->createTestsFromData($className, $name, $data);
-
         } catch (IncompleteTestError $e) {
             $message = \sprintf(
                 'Test for %s::%s marked incomplete by data provider',

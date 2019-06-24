@@ -1147,6 +1147,21 @@ abstract class TestCase extends Assert implements Test, SelfDescribing
         $this->warnings[] = $warning;
     }
 
+    public function unloadData(): void
+    {
+        if (empty($this->data)) {
+            return;
+        }
+
+        if (!\DEBUG_DP_UNLOAD) {
+            return;
+        }
+
+        // MVP unloading: this needs a deeper look
+        $this->data     = [];
+        $this->dataName = '__UNLOADED__';
+    }
+
     /**
      * Override to run the test and assert its state.
      *
@@ -2209,16 +2224,5 @@ abstract class TestCase extends Assert implements Test, SelfDescribing
                 }
             }
         }
-    }
-
-    public function unloadData(): void
-    {
-        if (empty($this->data)) {
-            return;
-        }
-
-        // MVP unloading: this needs a deeper look
-        $this->data = [];
-        $this->dataName = "__UNLOADED__";
     }
 }

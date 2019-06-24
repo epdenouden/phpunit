@@ -659,7 +659,7 @@ class TestSuite implements Test, SelfDescribing, IteratorAggregate
 
             $test->run($result);
 
-            if ($test instanceof TestCase and $test->usesDataProvider()) {
+            if ($test instanceof TestCase && $test->usesDataProvider()) {
                 $test->unloadData();
             }
         }
