@@ -47,13 +47,11 @@ class SyntheticDataProviderLoadingTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue(true);
     }
 
-    public function smallProvider(): array
+    public function smallProvider(): \Traversable
     {
-        return [
-            "small 1" => [str_repeat("some string", self::SIZE_SMALL)],
-            "small 2" => [str_repeat("some string", self::SIZE_SMALL)],
-            "small 3" => [str_repeat("some string", self::SIZE_SMALL)],
-        ];
+        yield "small 1" => [str_repeat("some string", self::SIZE_SMALL)];
+        yield "small 2" => [str_repeat("some string", self::SIZE_SMALL)];
+        yield "small 3" => [str_repeat("some string", self::SIZE_SMALL)];
     }
 
     public function mediumProvider(): array

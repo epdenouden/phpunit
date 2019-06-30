@@ -914,6 +914,13 @@ final class Test
                     $data = $dataProviderMethod->invoke($object, $methodName);
                 }
 
+                if ($data instanceof \Generator) {
+//                    print "***\n" . \var_export($data) . "\n***\n";
+//                    foreach ($data as $row) {
+//                        print_r($row);
+//                    }
+                }
+
                 if ($data instanceof Traversable) {
                     $origData = $data;
                     $data     = [];
