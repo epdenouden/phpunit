@@ -172,6 +172,12 @@
             </xs:extension>
         </xs:simpleContent>
     </xs:complexType>
+    <xs:simpleType name="dataProviderLoadingType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="prefetch"/>
+            <xs:enumeration value="jit"/>
+        </xs:restriction>
+    </xs:simpleType>
     <xs:simpleType name="executionOrderType">
         <xs:restriction base="xs:string">
             <xs:enumeration value="default"/>
@@ -245,6 +251,7 @@
         <xs:attribute name="convertErrorsToExceptions" type="xs:boolean" default="true"/>
         <xs:attribute name="convertNoticesToExceptions" type="xs:boolean" default="true"/>
         <xs:attribute name="convertWarningsToExceptions" type="xs:boolean" default="true"/>
+        <xs:attribute name="dataProviderLoading" type="dataProviderLoadingType" default="jit"/>
         <xs:attribute name="disableCodeCoverageIgnore" type="xs:boolean" default="false"/>
         <xs:attribute name="forceCoversAnnotation" type="xs:boolean" default="false"/>
         <xs:attribute name="printerClass" type="xs:string" default="PHPUnit\TextUI\ResultPrinter"/>

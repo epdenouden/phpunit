@@ -82,6 +82,7 @@ class Command
         'coverage-php='             => null,
         'coverage-text=='           => null,
         'coverage-xml='             => null,
+        'dataproviders='            => null,
         'debug'                     => null,
         'disallow-test-output'      => null,
         'disallow-resource-usage'   => null,
@@ -369,6 +370,22 @@ class Command
                             \ini_set($ini[0], $ini[1]);
                         } else {
                             \ini_set($ini[0], '1');
+                        }
+                    }
+
+                    break;
+
+                case '--dataproviders':
+                    if (isset($option[1])) {
+                        switch ($option[1]) {
+                            case 'prefetch':
+                                $this->arguments['dataProviderLazyLoading'] = false;
+
+                                break;
+                            case 'jit':
+                                $this->arguments['dataProviderLazyLoading'] = true;
+
+                                break;
                         }
                     }
 

@@ -825,6 +825,19 @@ final class Configuration
             );
         }
 
+        if ($root->hasAttribute('dataProviderLazyLoading')) {
+            switch ((string) $root->getAttribute('defaultTestSuite')) {
+                case 'prefetch':
+                    $result['dataProviderLazyLoading'] = false;
+
+                    break;
+                case 'jit':
+                    $result['dataProviderLazyLoading'] = true;
+
+                    break;
+            }
+        }
+
         if ($root->hasAttribute('executionOrder')) {
             foreach (\explode(',', $root->getAttribute('executionOrder')) as $order) {
                 switch ($order) {

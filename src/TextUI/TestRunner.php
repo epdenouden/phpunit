@@ -1206,6 +1206,7 @@ final class TestRunner extends BaseTestRunner
         $arguments['convertNoticesToExceptions']                          = $arguments['convertNoticesToExceptions'] ?? true;
         $arguments['convertWarningsToExceptions']                         = $arguments['convertWarningsToExceptions'] ?? true;
         $arguments['crap4jThreshold']                                     = $arguments['crap4jThreshold'] ?? 30;
+        $arguments['dataProviderLazyLoading']                             = $arguments['dataProviderLazyLoading'] ?? true;
         $arguments['disallowTestOutput']                                  = $arguments['disallowTestOutput'] ?? false;
         $arguments['disallowTodoAnnotatedTests']                          = $arguments['disallowTodoAnnotatedTests'] ?? false;
         $arguments['defaultTimeLimit']                                    = $arguments['defaultTimeLimit'] ?? 0;

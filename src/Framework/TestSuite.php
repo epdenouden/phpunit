@@ -101,6 +101,15 @@ class TestSuite implements \IteratorAggregate, SelfDescribing, Test
     private $declaredClasses;
 
     /**
+     * Data provider loading strategy
+     * - false: use legacy prefetch during initialization
+     * - true: use just-in-time or 'lazy' loading
+     *
+     * @var bool
+     */
+    private $dataProviderLazyLoading = true;
+
+    /**
      * Constructs a new TestSuite:
      *
      *   - PHPUnit\Framework\TestSuite() constructs an empty TestSuite.
@@ -563,6 +572,10 @@ class TestSuite implements \IteratorAggregate, SelfDescribing, Test
                 $test->setBackupGlobals($this->backupGlobals);
                 $test->setBackupStaticAttributes($this->backupStaticAttributes);
                 $test->setRunTestInSeparateProcess($this->runTestInSeparateProcess);
+
+                if ($test instanceof self) {
+                    $test->setDataProviderLazyLoading($this->dataProviderLazyLoading);
+                }
             }
 
             $test->run($result);
@@ -668,6 +681,13 @@ class TestSuite implements \IteratorAggregate, SelfDescribing, Test
     {
         if (null === $this->backupStaticAttributes && \is_bool($backupStaticAttributes)) {
             $this->backupStaticAttributes = $backupStaticAttributes;
+        }
+    }
+
+    public function setDataProviderLazyLoading(bool $dataProviderLazyLoading): void
+    {
+        if (null === $this->dataProviderLazyLoading) {
+            $this->dataProviderLazyLoading = $dataProviderLazyLoading;
         }
     }
 
