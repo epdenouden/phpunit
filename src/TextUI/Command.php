@@ -386,6 +386,8 @@ class Command
                                 $this->arguments['dataProviderLazyLoading'] = true;
 
                                 break;
+                            default:
+                                $this->exitWithErrorMessage("unrecognized --dataproviders option: " . $option[1]);
                         }
                     }
 
