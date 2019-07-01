@@ -23,7 +23,7 @@ class SyntheticDataProviderLoadingTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider smallProvider
      */
-    public function testSmall(string $text): void
+    public function testSmallProvider(string $text): void
     {
         $this->assertIsString($text);
     }
@@ -31,7 +31,7 @@ class SyntheticDataProviderLoadingTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider mediumProvider
      */
-    public function testMedium(string $text): void
+    public function testMediumProvider(string $text): void
     {
         $this->assertIsString($text);
     }
@@ -39,7 +39,31 @@ class SyntheticDataProviderLoadingTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider largeProvider
      */
-    public function testLarge(string $text): void
+    public function testLargeProvider(string $text): void
+    {
+        $this->assertIsString($text);
+    }
+
+    /**
+     * @dataProvider smallGenerator
+     */
+    public function testSmallGenerator(string $text): void
+    {
+        $this->assertIsString($text);
+    }
+
+    /**
+     * @dataProvider mediumGenerator
+     */
+    public function testMediumGenerator(string $text): void
+    {
+        $this->assertIsString($text);
+    }
+
+    /**
+     * @dataProvider largeGenerator
+     */
+    public function testLargeGenerator(string $text): void
     {
         $this->assertIsString($text);
     }
@@ -49,21 +73,36 @@ class SyntheticDataProviderLoadingTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue(true);
     }
 
-    public function smallProvider(): \Traversable
+    public function smallProvider(): array
+    {
+        return \iterator_to_array(self::smallGenerator());
+    }
+
+    public function mediumProvider(): array
+    {
+        return \iterator_to_array(self::mediumGenerator());
+    }
+
+    public function largeProvider(): array
+    {
+        return \iterator_to_array(self::largeGenerator());
+    }
+
+    public function smallGenerator(): \Generator
     {
         for ($i = 0; $i < 3; $i++) {
             yield "small $i" => [\str_repeat('some string', self::SIZE_SMALL)];
         }
     }
 
-    public function mediumProvider(): \Traversable
+    public function mediumGenerator(): \Generator
     {
         for ($i = 0; $i < 5; $i++) {
             yield "medium $i" => [\str_repeat('some string', self::SIZE_MEDIUM)];
         }
     }
 
-    public function largeProvider(): \Traversable
+    public function largeGenerator(): \Generator
     {
         for ($i = 0; $i < 10; $i++) {
             yield "large $i" => [\str_repeat('some string', self::SIZE_LARGE)];
