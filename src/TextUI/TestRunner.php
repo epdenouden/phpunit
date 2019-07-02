@@ -135,6 +135,10 @@ final class TestRunner extends BaseTestRunner
             $GLOBALS['__PHPUNIT_BOOTSTRAP'] = $arguments['bootstrap'];
         }
 
+        if ($suite instanceof TestSuite && $arguments['dataProviderLazyLoading'] === false) {
+            $suite->loadDataProviders();
+        }
+
         if ($suite instanceof TestCase || $suite instanceof TestSuite) {
             if ($arguments['backupGlobals'] === true) {
                 $suite->setBackupGlobals(true);
@@ -996,6 +1000,10 @@ final class TestRunner extends BaseTestRunner
 
             if (isset($phpunitConfiguration['resolveDependencies']) && !isset($arguments['resolveDependencies'])) {
                 $arguments['resolveDependencies'] = $phpunitConfiguration['resolveDependencies'];
+            }
+
+            if (isset($phpunitConfiguration['dataProviderLazyLoading']) && !isset($arguments['dataProviderLazyLoading'])) {
+                $arguments['dataProviderLazyLoading'] = $phpunitConfiguration['dataProviderLazyLoading'];
             }
 
             if (isset($phpunitConfiguration['noInteraction']) && !isset($arguments['noInteraction'])) {

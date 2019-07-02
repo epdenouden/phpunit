@@ -387,7 +387,7 @@ class Command
 
                                 break;
                             default:
-                                $this->exitWithErrorMessage("unrecognized --dataproviders option: " . $option[1]);
+                                $this->exitWithErrorMessage('unrecognized --dataproviders option: ' . $option[1]);
                         }
                     }
 
@@ -1248,6 +1248,7 @@ class Command
 
         $renderer = new TextTestListRenderer;
 
+        $suite->loadDataProviders();
         print $renderer->render($suite);
 
         if ($exit) {
@@ -1266,6 +1267,7 @@ class Command
 
         $renderer = new XmlTestListRenderer;
 
+        $suite->loadDataProviders();
         \file_put_contents($target, $renderer->render($suite));
 
         \printf(

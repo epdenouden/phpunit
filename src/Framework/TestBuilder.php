@@ -90,7 +90,7 @@ final class TestBuilder
                 $data    = new WarningTestCase($message);
             }
 
-            // Test method with @dataProvider.
+            // Test method with @dataProvider or @testWith
             if (isset($data)) {
                 $test = $this->buildDataProviderTestSuite(
                     $methodName,

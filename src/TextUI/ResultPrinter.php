@@ -10,6 +10,7 @@
 namespace PHPUnit\TextUI;
 
 use PHPUnit\Framework\AssertionFailedError;
+use PHPUnit\Framework\DataProviderTestSuite;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\Test;
 use PHPUnit\Framework\TestCase;
@@ -112,6 +113,11 @@ class ResultPrinter extends Printer implements TestListener
      * @var bool
      */
     private $defectListPrinted = false;
+
+    /**
+     * @var bool
+     */
+    private $countDataProviderTests = false;
 
     /**
      * Constructor.
@@ -238,6 +244,10 @@ class ResultPrinter extends Printer implements TestListener
             $this->numTestsWidth = \strlen((string) $this->numTests);
             $this->maxColumn     = $this->numberOfColumns - \strlen('  /  (XXX%)') - (2 * $this->numTestsWidth);
         }
+
+        if ($suite instanceof DataProviderTestSuite) {
+            $this->countDataProviderTests = true;
+        }
     }
 
     /**
@@ -245,6 +255,7 @@ class ResultPrinter extends Printer implements TestListener
      */
     public function endTestSuite(TestSuite $suite): void
     {
+        $this->countDataProviderTests = false;
     }
 
     /**
@@ -478,6 +489,10 @@ class ResultPrinter extends Printer implements TestListener
         $this->write($progress);
         $this->column++;
         $this->numTestsRun++;
+
+        if ($this->countDataProviderTests) {
+            $this->numTests++;
+        }
 
         if ($this->column == $this->maxColumn || $this->numTestsRun == $this->numTests) {
             if ($this->numTestsRun == $this->numTests) {
