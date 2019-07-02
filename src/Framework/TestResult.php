@@ -437,6 +437,10 @@ final class TestResult implements Countable
 
             $this->time += $time;
         }
+
+        if ($test instanceof TestCase && $test->usesDataProvider()) {
+            $test->unloadData();
+        }
     }
 
     /**

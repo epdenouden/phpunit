@@ -2334,4 +2334,14 @@ abstract class TestCase extends Assert implements SelfDescribing, Test
 
         return TestUtil::isTestMethod($method);
     }
+
+    public function unloadData(): void
+    {
+        if (empty($this->data)) {
+            return;
+        }
+
+        $this->data     = [];
+        $this->dataName = '__UNLOADED__';
+    }
 }
