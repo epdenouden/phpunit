@@ -120,6 +120,11 @@ class ResultPrinter extends Printer implements TestListener
     private $countDataProviderTests = false;
 
     /**
+     * @var TestSuite
+     */
+    private $rootTestSuite;
+
+    /**
      * Constructor.
      *
      * @param null|resource|string $out
@@ -239,6 +244,10 @@ class ResultPrinter extends Printer implements TestListener
      */
     public function startTestSuite(TestSuite $suite): void
     {
+        if ($this->rootTestSuite === null) {
+            $this->rootTestSuite = $suite;
+        }
+
         if ($this->numTests == -1) {
             $this->numTests      = \count($suite);
             $this->numTestsWidth = \strlen((string) $this->numTests);
@@ -246,7 +255,7 @@ class ResultPrinter extends Printer implements TestListener
         }
 
         if ($suite instanceof DataProviderTestSuite) {
-            $this->countDataProviderTests = true;
+            $this->numTests = \count($this->rootTestSuite);
         }
     }
 
@@ -255,7 +264,11 @@ class ResultPrinter extends Printer implements TestListener
      */
     public function endTestSuite(TestSuite $suite): void
     {
-        $this->countDataProviderTests = false;
+        // Recount number of tests after a data provider
+        if ($this->countDataProviderTests) {
+            $this->numTests               = \count($this->rootTestSuite);
+            $this->countDataProviderTests = false;
+        }
     }
 
     /**
@@ -491,7 +504,7 @@ class ResultPrinter extends Printer implements TestListener
         $this->numTestsRun++;
 
         if ($this->countDataProviderTests) {
-            $this->numTests++;
+            $this->numTests = \max($this->numTests, $this->numTestsRun);
         }
 
         if ($this->column == $this->maxColumn || $this->numTestsRun == $this->numTests) {

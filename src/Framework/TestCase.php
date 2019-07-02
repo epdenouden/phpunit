@@ -1154,6 +1154,16 @@ abstract class TestCase extends Assert implements SelfDescribing, Test
         $this->warnings[] = $warning;
     }
 
+    public function unloadData(): void
+    {
+        if (empty($this->data)) {
+            return;
+        }
+
+        $this->data     = [];
+        $this->dataName = '__UNLOADED__';
+    }
+
     /**
      * Override to run the test and assert its state.
      *
@@ -2333,15 +2343,5 @@ abstract class TestCase extends Assert implements SelfDescribing, Test
         }
 
         return TestUtil::isTestMethod($method);
-    }
-
-    public function unloadData(): void
-    {
-        if (empty($this->data)) {
-            return;
-        }
-
-        $this->data     = [];
-        $this->dataName = '__UNLOADED__';
     }
 }
