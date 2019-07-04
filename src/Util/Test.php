@@ -506,21 +506,8 @@ final class Test
             $data = self::getDataFromTestWithAnnotation($docComment);
         }
 
-        if ($data === []) {
+        if (!($data instanceof Generator) && empty($data)) {
             throw new SkippedTestError;
-        }
-
-        if ($data !== null) {
-            foreach ($data as $key => $value) {
-                if (!\is_array($value)) {
-                    throw new Exception(
-                        \sprintf(
-                            'Data set %s is invalid.',
-                            \is_int($key) ? '#' . $key : '"' . $key . '"'
-                        )
-                    );
-                }
-            }
         }
 
         return $data;
@@ -678,6 +665,16 @@ final class Test
                 'backupStaticAttributes'
             ),
         ];
+    }
+
+    public static function hasDataProviders(string $className, string $methodName): bool
+    {
+        $annotations = self::parseTestMethodAnnotations(
+            $className,
+            $methodName
+        );
+
+        return isset($annotations['method']['dataProvider']) || isset($annotations['method']['testWith']);
     }
 
     public static function getDependencies(string $className, string $methodName): array

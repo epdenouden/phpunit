@@ -59,43 +59,11 @@ final class TestBuilder
             $test = $this->buildTestWithoutData($className);
         } // TestCase($name, $data)
         else {
-            try {
-                $data = TestUtil::getProvidedData(
-                    $className,
-                    $methodName
-                );
-            } catch (IncompleteTestError $e) {
-                $message = \sprintf(
-                    'Test for %s::%s marked incomplete by data provider',
-                    $className,
-                    $methodName
-                );
-                $message = $this->appendExceptionMessageIfAvailable($e, $message);
-                $data    = new IncompleteTestCase($className, $methodName, $message);
-            } catch (SkippedTestError $e) {
-                $message = \sprintf(
-                    'Test for %s::%s skipped by data provider',
-                    $className,
-                    $methodName
-                );
-                $message = $this->appendExceptionMessageIfAvailable($e, $message);
-                $data    = new SkippedTestCase($className, $methodName, $message);
-            } catch (\Throwable $t) {
-                $message = \sprintf(
-                    'The data provider specified for %s::%s is invalid.',
-                    $className,
-                    $methodName
-                );
-                $message = $this->appendExceptionMessageIfAvailable($t, $message);
-                $data    = new WarningTestCase($message);
-            }
-
             // Test method with @dataProvider or @testWith
-            if (isset($data)) {
+            if (TestUtil::hasDataProviders($className, $methodName)) {
                 $test = $this->buildDataProviderTestSuite(
                     $methodName,
                     $className,
-                    $data,
                     $runTestInSeparateProcess,
                     $preserveGlobalState,
                     $runClassInSeparateProcess,
@@ -120,17 +88,6 @@ final class TestBuilder
         return $test;
     }
 
-    private function appendExceptionMessageIfAvailable(\Throwable $e, string $message): string
-    {
-        $_message = $e->getMessage();
-
-        if (!empty($_message)) {
-            $message .= "\n" . $_message;
-        }
-
-        return $message;
-    }
-
     private function buildTestWithoutData(string $className)
     {
         return new $className;
@@ -139,7 +96,6 @@ final class TestBuilder
     private function buildDataProviderTestSuite(
         string $methodName,
         string $className,
-        $data,
         bool $runTestInSeparateProcess,
         ?bool $preserveGlobalState,
         bool $runClassInSeparateProcess,
@@ -149,29 +105,15 @@ final class TestBuilder
             $className . '::' . $methodName
         );
 
-        $groups = TestUtil::getGroups($className, $methodName);
-
-        if ($data instanceof WarningTestCase ||
-            $data instanceof SkippedTestCase ||
-            $data instanceof IncompleteTestCase) {
-            $dataProviderTestSuite->addTest($data, $groups);
-        } else {
-            foreach ($data as $_dataName => $_data) {
-                $_test = new $className($methodName, $_data, $_dataName);
-
-                \assert($_test instanceof TestCase);
-
-                $this->configureTestCase(
-                    $_test,
-                    $runTestInSeparateProcess,
-                    $preserveGlobalState,
-                    $runClassInSeparateProcess,
-                    $backupSettings
-                );
-
-                $dataProviderTestSuite->addTest($_test, $groups);
-            }
-        }
+        $dataProviderTestSuite->setTestOptions(
+            [
+                'runTestInSeparateProcess'  => $runTestInSeparateProcess,
+                'runClassInSeparateProcess' => $runClassInSeparateProcess,
+                'preserveGlobalState'       => $preserveGlobalState,
+                'backupGlobals'             => $backupSettings['backupGlobals'],
+                'backupStaticAttributes'    => $backupSettings['backupStaticAttributes'],
+            ]
+        );
 
         return $dataProviderTestSuite;
     }

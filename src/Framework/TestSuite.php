@@ -253,7 +253,7 @@ class TestSuite implements \IteratorAggregate, SelfDescribing, Test
                 }
             }
 
-            if ($test instanceof TestCase) {
+            if ($test instanceof TestCase || $test instanceof DataProviderTestSuite) {
                 $test->setGroups($groups);
             }
         }
@@ -474,6 +474,15 @@ class TestSuite implements \IteratorAggregate, SelfDescribing, Test
     public function getGroups(): array
     {
         return \array_keys($this->groups);
+    }
+
+
+    /**
+     * Sets the test groups of the suite.
+     */
+    public function setGroups(array $groups): void
+    {
+        $this->groups = $groups;
     }
 
     public function getGroupDetails(): array
